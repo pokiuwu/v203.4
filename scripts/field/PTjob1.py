@@ -1,0 +1,17 @@
+if (sm.getChr().getJob() == 2003):
+    sm.lockInGameUI(True)
+    sm.playVideoByScript("phantom.avi")
+    sm.levelUntil(10)
+
+    sm.setJob(2400)
+    sm.addSP(5)
+    sm.resetStats()
+    sm.addMaxHP(150)
+    sm.addMaxMP(50)
+    sm.giveAndEquip(1362001)
+    sm.giveAndEquip(1352100)
+    sm.giveItem(2000019, 50)
+    sm.giveItem(1142375)
+    sm.completeQuest(25000)
+    sm.lockInGameUI(False)
+    sm.dispose()

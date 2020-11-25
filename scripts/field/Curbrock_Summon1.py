@@ -1,0 +1,12 @@
+# Curbrock Summon 2
+
+CURBROCK2 = 9400930 # MOD ID
+CURBROCKS_ESCAPE_ROUTE_VER2 = 600050040 # MAP ID
+CURBROCKS_ESCAPE_ROUTE_VER3 = 600050050 # MAP ID 2
+
+sm.spawnMob(CURBROCK2, 190, -208, False)
+sm.createClock(1800)
+sm.addEvent(sm.invokeAfterDelay(1800000, "warp", CURBROCKS_ESCAPE_ROUTE_VER3, 0))
+sm.waitForMobDeath(CURBROCK2)
+sm.warp(CURBROCKS_ESCAPE_ROUTE_VER2)
+sm.stopEvents()

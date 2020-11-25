@@ -1,0 +1,26 @@
+*.class
+.idea/
+SwordieMS.iml
+WZ/
+info txts/
+dat/
+bin/classes/headerText.txt
+bin/classes/decodeforlocal.txt
+bin/
+resources/Cash.txt
+resources/Eqp.txt
+resources/Etc.txt
+resources/Ins.txt
+resources/Map.txt
+resources/Mob.txt
+resources/Npc.txt
+resources/Skill.txt
+resources/Use.txt
+resourcesMap
+resourcesMob
+resourcesNpc
+resourcesSkill.txt
+*.iml
+src/main/java/net/swordie/ms/Test.java
+src/main/java/net/swordie/ms/ServerConstants.java
+v201.rar

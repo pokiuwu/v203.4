@@ -42,6 +42,7 @@ public final class PacketEncoder extends MessageToByteEncoder<Packet> {
         byte[] data = outPacket.getData();
         boolean bEncryptData = true;
         NettyClient c = chc.channel().attr(NettyClient.CLIENT_KEY).get();
+        AESCipher ac = chc.channel().attr(NettyClient.AES_CIPHER).get();
         if (c != null) {
             if(!OutHeader.isSpamHeader(OutHeader.getOutHeaderByOp(outPacket.getHeader()))) {
                 log.debug("[Out]\t| " + outPacket);
@@ -56,7 +57,7 @@ public final class PacketEncoder extends MessageToByteEncoder<Packet> {
                 if (bEncryptData) {
                     uDataLen ^= uRawSeq;
                     if (c.getPort() == 8484) {
-                        AESCipher.Crypt(data, uSeqSend);
+                        ac.Crypt(data, uSeqSend);
                     } else {
                         CIGCipher.Crypt(data, uSeqSend);
                     }

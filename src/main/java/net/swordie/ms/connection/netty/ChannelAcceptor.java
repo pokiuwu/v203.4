@@ -6,6 +6,7 @@ import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import net.swordie.ms.connection.crypto.AESCipher;
 import org.apache.log4j.LogManager;
 import net.swordie.ms.connection.packet.Login;
 import net.swordie.ms.handlers.EventManager;
@@ -45,6 +46,7 @@ public class ChannelAcceptor implements Runnable {
                     c.write(Login.sendConnect(riv, siv, c.getPort() == 8484));
 
                     ch.attr(CLIENT_KEY).set(c);
+                    ch.attr(Client.AES_CIPHER).set(new AESCipher());
 
                     EventManager.addFixedRateEvent(c::sendPing, 0, 10000);
                 }

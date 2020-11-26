@@ -12,7 +12,7 @@
         </property>
 
         <property name = "hibernate.connection.url">
-            jdbc:mysql://127.0.0.1:3306/swordie?autoReconnect=true&amp;useSSL=false
+            jdbc:mysql://127.0.0.1:3306/203?autoReconnect=true&amp;useSSL=false
         </property>
 
         <property name = "hibernate.connection.username">
@@ -20,7 +20,7 @@
         </property>
 
         <property name = "hibernate.connection.password">
-            
+            root
         </property>
 
         <property name="hibernate.enable_lazy_load_no_trans">

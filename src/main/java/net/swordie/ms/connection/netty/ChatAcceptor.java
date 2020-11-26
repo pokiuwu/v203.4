@@ -7,6 +7,7 @@ import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import net.swordie.ms.connection.crypto.AESCipher;
 import org.apache.log4j.LogManager;
 import net.swordie.ms.connection.packet.Login;
 
@@ -51,6 +52,8 @@ public class ChatAcceptor implements Runnable{
 
 
                     ch.attr(CLIENT_KEY).set(c);
+                    ch.attr(Client.AES_CIPHER).set(new AESCipher());
+
                 }
             });
 

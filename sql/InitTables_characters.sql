@@ -123,14 +123,6 @@ create table questlists (
     foreign key (fk_questid) references quests(id)
 );
 
-create table quests_ex (
-	id bigint not null auto_increment,
-    charid int,
-    questid int,
-    qrValue varchar(255),
-	primary key (id),
-	foreign key (charid) references characters(id)
-);
 
 create table questprogressrequirements (
 	id bigint not null auto_increment,
@@ -501,7 +493,7 @@ create table guilds (
     seasonpoints int,
     allianceid int,
     level int,
-    rank int,
+    `rank` int,
     ggp int,
     appliable boolean,
     joinsetting int,
@@ -570,6 +562,11 @@ create table offenses (
     foreign key (manager_id) references offense_managers(id) on delete cascade
 );
 
+create table matrixinventory (
+	id int not null auto_increment,
+    primary key (id)
+);
+
 create table characters (
 	id int not null auto_increment,
     accid int,
@@ -605,6 +602,15 @@ create table characters (
     foreign key (questmanager) references questmanagers(id),
     foreign key (guild) references guilds(id),
     foreign key (monsterbook) references monsterbookinfos(id)
+);
+
+create table quests_ex (
+	id bigint not null auto_increment,
+    charid int,
+    questid int,
+    qrValue varchar(255),
+	primary key (id),
+	foreign key (charid) references characters(id)
 );
 
 create table familiars (
@@ -745,10 +751,6 @@ create table skills (
     foreign key (charid) references characters(id)  on delete cascade
 );
 
-create table matrixinventory (
-	id int not null auto_increment,
-    primary key (id)
-);
 
 create table matrixskills (
 	id bigint not null auto_increment,

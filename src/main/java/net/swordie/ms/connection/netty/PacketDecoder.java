@@ -40,6 +40,7 @@ public class PacketDecoder extends ByteToMessageDecoder {
     @Override
     protected void decode(ChannelHandlerContext chc, ByteBuf in, List<Object> out) {
         NettyClient c = chc.channel().attr(NettyClient.CLIENT_KEY).get();
+        AESCipher ac = chc.channel().attr(NettyClient.AES_CIPHER).get();
         if (false) {
             byte[] dec = new byte[in.readableBytes()];
             in.readBytes(dec);
@@ -76,7 +77,7 @@ public class PacketDecoder extends ByteToMessageDecoder {
                     in.readBytes(dec);
 
                     if (bEncryptData) {
-                        AESCipher.Crypt(dec, uSeqRcv);
+                        ac.Crypt(dec, uSeqRcv);
                     }
 
                     c.setRecvIV(CIGCipher.InnoHash(uSeqRcv, 4, 0));

@@ -21,6 +21,7 @@ import net.swordie.ms.connection.InPacket;
 import io.netty.channel.Channel;
 import io.netty.util.AttributeKey;
 import net.swordie.ms.connection.Packet;
+import net.swordie.ms.connection.crypto.AESCipher;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -36,6 +37,8 @@ import java.util.concurrent.locks.ReentrantLock;
  * @author Zygon
  */
 public class NettyClient {
+
+    public static final AttributeKey<AESCipher> AES_CIPHER = AttributeKey.valueOf("A");
     /**
      * Attribute key for this NettyClient object.
      */

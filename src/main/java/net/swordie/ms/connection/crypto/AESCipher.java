@@ -6,7 +6,7 @@ import net.swordie.ms.ServerConstants;
  * Created by MechAviv on 1/18/2019.
  */
 public class AESCipher {
-    private static final AES pCipher;
+    private AES pCipher;
 
     public static final short nVersion = ServerConstants.VERSION;
     private static final byte[] aKey = new byte[]{
@@ -20,19 +20,19 @@ public class AESCipher {
             (byte) 0x06, (byte) 0x00, (byte) 0x00, (byte) 0x00
     };
 
-    static {
+    public AESCipher() {
         pCipher = new AES();
         pCipher.setKey(aKey);
     }
 
-    public static void Crypt(byte[] aData, int pSrc) {
+    public void Crypt(byte[] aData, int pSrc) {
         byte[] pdwKey = new byte[]{
                 (byte) (pSrc & 0xFF), (byte) ((pSrc >> 8) & 0xFF), (byte) ((pSrc >> 16) & 0xFF), (byte) ((pSrc >> 24) & 0xFF)
         };
         Crypt(aData, pdwKey);
     }
 
-    public static void Crypt(byte[] aData, byte[] aSeqKey) {
+    public void Crypt(byte[] aData, byte[] aSeqKey) {
         int a = aData.length;
         int b = 0x5B0;
         int c = 0;
@@ -53,7 +53,7 @@ public class AESCipher {
         }
     }
 
-    public static byte[] multiplyBytes(byte[] iv, int i, int i0) {
+    public byte[] multiplyBytes(byte[] iv, int i, int i0) {
         byte[] ret = new byte[i * i0];
         for (int x = 0; x < ret.length; x++) {
             ret[x] = iv[x % i];

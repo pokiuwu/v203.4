@@ -349,7 +349,7 @@ public class LoginHandler {
         c.write(Login.selectCharacterResult(LoginType.Success, (byte) 0, channel.getPort(), characterId));
     }
 
-    public static void handleCharSelect(Client c, InPacket inPacket) {
+  public static void handleCharSelect(Client c, InPacket inPacket) {
         int characterId = inPacket.decodeInt();
         String name = inPacket.decodeString();
         byte worldId = c.getWorldId();
@@ -358,8 +358,6 @@ public class LoginHandler {
         if (c.isAuthorized() && c.getAccount().hasCharacter(characterId)) {
             Server.getInstance().getWorldById(worldId).getChannelById(channelId).addClientInTransfer(channelId, characterId, c);
             c.write(Login.selectCharacterResult(LoginType.Success, (byte) 0, channel.getPort(), characterId));
-        } else {
-            c.write(Login.selectCharacterResult(LoginType.UnauthorizedUser, (byte) 0, 0, 0));
         }
     }
 

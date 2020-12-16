@@ -659,7 +659,7 @@ public class WorldHandler {
         }
     }
 
-    public static void handleUserPortalScrollUseRequest(Client c, InPacket inPacket) {
+      public static void handleUserPortalScrollUseRequest(Client c, InPacket inPacket) {
         Char chr = c.getChr();
         Field field = chr.getField();
         if ((field.getFieldLimit() & FieldOption.PortalScrollLimit.getVal()) > 0 || !field.isChannelField()) {
@@ -672,12 +672,7 @@ public class WorldHandler {
         int itemID = inPacket.decodeInt();
         ItemInfo ii = ItemData.getItemInfoByID(itemID);
         Field toField;
-
-        if (itemID != 2030000) {
-            toField = chr.getOrCreateFieldByCurrentInstanceType(ii.getMoveTo());
-        } else {
-            toField = chr.getOrCreateFieldByCurrentInstanceType(field.getReturnMap());
-        }
+        toField = chr.getOrCreateFieldByCurrentInstanceType(field.getReturnMap());
         Portal portal = toField.getDefaultPortal();
         chr.warp(toField, portal);
         chr.consumeItem(itemID, 1);

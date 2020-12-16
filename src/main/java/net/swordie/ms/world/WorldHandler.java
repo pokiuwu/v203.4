@@ -712,14 +712,7 @@ public class WorldHandler {
             chr.warp(sleepy);
             chr.consumeItem(itemID, 1);
             chr.dispose();
-            return;
-        } else
-        if (itemID == 2030007) {
-            Field ellinia = chr.getOrCreateFieldByCurrentInstanceType(101000000);
-            chr.warp(ellinia);
-            chr.consumeItem(itemID, 1);
-            chr.dispose();
-            return;
+            return;  
         } else {
             toField = chr.getOrCreateFieldByCurrentInstanceType(field.getReturnMap());
             Portal portal = toField.getDefaultPortal();

@@ -20,6 +20,7 @@ A Java Maplestory server emulator. This is a fork of the v203.4 repo [MapleEllin
 - MySQL & WAMP
 - Github (public version control)
 - IntelliJ
+- WzDumper v1.9.2 (https://github.com/Xterminatorz/WZ-Dumper/releases/tag/1.9.2)
 
 ## Credits
 - Notable Credits: SwordieMS Team, Mechaviv

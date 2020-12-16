@@ -41,7 +41,7 @@ public class SkillInfo {
     private Map<Integer, Integer> reqSkills = new HashMap<>();
     private boolean notCooltimeReset;
     private boolean notIncBuffDuration;
-    private static ScriptEngine engine = new ScriptEngineManager().getEngineByName("graal.js");
+    private static ScriptEngine engine = new ScriptEngineManager().getEngineByName("JavaScript");
     private boolean psd;
     private Set<Integer> addAttackSkills = new HashSet<>();
     private Map<Integer, Integer> extraSkillInfo = new HashMap<>();

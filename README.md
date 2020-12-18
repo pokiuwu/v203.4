@@ -10,17 +10,21 @@ A Java Maplestory server emulator. This is a fork of the v203.4 repo [MapleEllin
 - Drag the output file from the build (ijl15.dll) into your v203.4 Maplestory directory and run a batch file with the following command `MapleStory.exe WebStart admin 8.31.99.141 8484`
 - You should be good to go! :octocat:
 
+## Client Installation
+- Download [Depot Downloader](https://github.com/SteamRE/DepotDownloader).
+- Rest of Steps to be added by Poki.
+
 ## Noteable Changes
 - A decent amount of packets fixed (err 38)
 - Threading issues
 - Stability fixes, that the original v203.4 lacked
 
 ## Tech Stack
-- Java 8
-- MySQL & WAMP
+- [Java 8](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
+- [MySQL & WAMP](https://dev.mysql.com/downloads/workbench/)
 - Github (public version control)
-- IntelliJ
-- WzDumper v1.9.2 (https://github.com/Xterminatorz/WZ-Dumper/releases/tag/1.9.2)
+- [IntelliJ](https://www.jetbrains.com/idea/)
+- [WzDumper v1.9.2](https://github.com/Xterminatorz/WZ-Dumper/releases/tag/1.9.2)
 
 ## Credits
 - Notable Credits: SwordieMS Team, Mechaviv

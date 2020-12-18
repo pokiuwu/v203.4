@@ -659,7 +659,7 @@ public class WorldHandler {
         }
     }
 
-    public static void handleUserPortalScrollUseRequest(Client c, InPacket inPacket) {
+        public static void handleUserPortalScrollUseRequest(Client c, InPacket inPacket) {
         Char chr = c.getChr();
         Field field = chr.getField();
         if ((field.getFieldLimit() & FieldOption.PortalScrollLimit.getVal()) > 0 || !field.isChannelField()) {
@@ -672,15 +672,53 @@ public class WorldHandler {
         int itemID = inPacket.decodeInt();
         ItemInfo ii = ItemData.getItemInfoByID(itemID);
         Field toField;
-
-        if (itemID != 2030000) {
-            toField = chr.getOrCreateFieldByCurrentInstanceType(ii.getMoveTo());
+        if (itemID == 2030001) {
+            Field lith = chr.getOrCreateFieldByCurrentInstanceType(104000000);
+            chr.warp(lith);
+            chr.consumeItem(itemID, 1);
+            chr.dispose();
+            return;
+        } else
+        if (itemID == 2030002) {
+            Field ellinia = chr.getOrCreateFieldByCurrentInstanceType(101000000);
+            chr.warp(ellinia);
+            chr.consumeItem(itemID, 1);
+            chr.dispose();
+            return;
+        } else
+        if (itemID == 2030003) {
+            Field perion = chr.getOrCreateFieldByCurrentInstanceType(102000000);
+            chr.warp(perion);
+            chr.consumeItem(itemID, 1);
+            chr.dispose();
+            return;
+        } else
+        if (itemID == 2030004) {
+            Field henesys = chr.getOrCreateFieldByCurrentInstanceType(100000000);
+            chr.warp(henesys);
+            chr.consumeItem(itemID, 1);
+            chr.dispose();
+            return;
+        } else
+        if (itemID == 2030005) {
+            Field kerning = chr.getOrCreateFieldByCurrentInstanceType(103000000);
+            chr.warp(kerning);
+            chr.consumeItem(itemID, 1);
+            chr.dispose();
+            return;
+        } else
+        if (itemID == 2030006) {
+            Field sleepy = chr.getOrCreateFieldByCurrentInstanceType(105000000);
+            chr.warp(sleepy);
+            chr.consumeItem(itemID, 1);
+            chr.dispose();
+            return;  
         } else {
             toField = chr.getOrCreateFieldByCurrentInstanceType(field.getReturnMap());
+            Portal portal = toField.getDefaultPortal();
+            chr.warp(toField, portal);
+            chr.consumeItem(itemID, 1);
         }
-        Portal portal = toField.getDefaultPortal();
-        chr.warp(toField, portal);
-        chr.consumeItem(itemID, 1);
     }
 
     public static void handleUserSkillUpRequest(Client c, InPacket inPacket) {

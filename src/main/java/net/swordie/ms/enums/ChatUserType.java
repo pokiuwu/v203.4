@@ -4,8 +4,8 @@ package net.swordie.ms.enums;
  * Created on 1/18/2018.
  */
 public enum ChatUserType {
-    User(1),
-    Admin(0);
+    User(0),
+    Admin(1);
 
     private byte val;
 

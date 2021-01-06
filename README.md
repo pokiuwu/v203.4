@@ -21,7 +21,7 @@ A Java Maplestory server emulator. This is a fork of the v203.4 repo [MapleEllin
 
 ## Tech Stack
 - [Java 8](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
-- [MySQL & WAMP](https://dev.mysql.com/downloads/workbench/)
+- [MySQL](https://dev.mysql.com/downloads/workbench/) & [WAMP](https://www.wampserver.com/en/)
 - Github (public version control)
 - [IntelliJ](https://www.jetbrains.com/idea/)
 - [WzDumper v1.9.2](https://github.com/Xterminatorz/WZ-Dumper/releases/tag/1.9.2)

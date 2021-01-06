@@ -9,6 +9,7 @@ import net.swordie.ms.client.character.skills.temp.CharacterTemporaryStat;
 import net.swordie.ms.client.character.skills.info.MobAttackInfo;
 import net.swordie.ms.client.character.skills.temp.TemporaryStatManager;
 import net.swordie.ms.client.guild.Guild;
+import net.swordie.ms.constants.GameConstants;
 import net.swordie.ms.enums.BaseStat;
 import net.swordie.ms.connection.OutPacket;
 import net.swordie.ms.constants.SkillConstants;
@@ -255,7 +256,7 @@ public class UserRemote {
     }
 
     public static OutPacket receiveHP(Char chr) {
-        return receiveHP(chr.getId(), chr.getHP(), chr.getTotalStat(BaseStat.mhp));
+        return receiveHP(chr.getId(), chr.getHP(), Math.min(chr.getTotalStat(BaseStat.mhp), GameConstants.MAX_HP_MP));
     }
 
     public static OutPacket receiveHP(int charID, int curHP, int maxHP) {

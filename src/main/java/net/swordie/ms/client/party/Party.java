@@ -65,7 +65,7 @@ public class Party implements Encodable {
             outPacket.encodeInt(pm != null ? pm.getJob() : 0); //24
         }
         for (PartyMember pm : partyMembers) {
-            outPacket.encodeInt(pm != null ? pm.getSubSob() : 0); //24
+            outPacket.encodeInt(pm != null ? pm.getSubJob() : 0); //24
         }
         for (PartyMember pm : partyMembers) {
             outPacket.encodeInt(pm != null ? pm.getLevel() : 0); //24
@@ -110,27 +110,24 @@ public class Party implements Encodable {
      * Adds a {@link Char} to this Party. Will do nothing if this Party is full.
      * @param chr The Char to add.
      */
-    public void addPartyMember(Char chr) {
-        if(isFull()) {
-            return;
+    public boolean addPartyMember(Char chr) {
+        if (isFull()) {
+            return false;
         }
         PartyMember pm = new PartyMember(chr);
-        if(isEmpty()) {
+        if (isEmpty()) {
             setPartyLeaderID(chr.getId());
         }
+
         PartyMember[] partyMembers = getPartyMembers();
-        boolean added = false;
         for(int i = 0; i < partyMembers.length; i++) {
-            if(partyMembers[i] == null) {
+            if (partyMembers[i] == null) {
                 partyMembers[i] = pm;
                 chr.setParty(this);
-                added = true;
-                break;
+                return true;
             }
         }
-        if (added) {
-            broadcast(WvsContext.partyResult(PartyResult.joinParty(this, chr.getName())));
-        }
+        return false;
     }
 
     public int getId() {

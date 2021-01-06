@@ -40,7 +40,7 @@ public class PartyMember {
         return job;
     }
 
-    public short getSubSob() {
+    public short getSubJob() {
         return subJob;
     }
 

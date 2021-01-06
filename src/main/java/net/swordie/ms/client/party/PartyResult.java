@@ -51,7 +51,7 @@ public class PartyResult implements Encodable {
                 outPacket.encodeString(member.getCharName());
                 outPacket.encodeInt(member.getLevel());
                 outPacket.encodeInt(member.getJob());
-                outPacket.encodeInt(member.getSubSob());
+                outPacket.encodeInt(member.getSubJob());
                 break;
             case PartyRes_ChangePartyBoss_Done:
                 outPacket.encodeInt(member.getCharID());

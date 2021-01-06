@@ -3526,6 +3526,10 @@ public class Char {
 		return party;
 	}
 
+	public boolean hasParty() {
+		return this.getParty() != null;
+	}
+
 	public void logout() {
 		punishLieDetectorEvasion();
 		log.info("Logging out " + getName());

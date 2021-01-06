@@ -615,7 +615,7 @@ public class WvsContext {
             outPacket.encodeString(chr.getName());
             outPacket.encodeShort(chr.getJob());
             outPacket.encodeShort(chr.getAvatarData().getCharacterStat().getSubJob());
-            outPacket.encodeByte(chr.getLevel());
+            outPacket.encodeInt(chr.getLevel());
         }
 
         return outPacket;
@@ -629,7 +629,7 @@ public class WvsContext {
             Char leader = party.getPartyLeader().getChr();
             outPacket.encodeInt(party.getId());
             outPacket.encodeString(leader.getName());
-            outPacket.encodeByte(party.getAvgLevel());
+            outPacket.encodeInt(party.getAvgLevel());
             outPacket.encodeByte(party.getMembers().size());
             outPacket.encodeString(party.getName());
             outPacket.encodeByte(party.getMembers().size());
@@ -637,8 +637,8 @@ public class WvsContext {
                 outPacket.encodeInt(pm.getCharID());
                 outPacket.encodeString(pm.getCharName());
                 outPacket.encodeShort(pm.getJob());
-                outPacket.encodeShort(pm.getSubSob());
-                outPacket.encodeByte(pm.getLevel());
+                outPacket.encodeShort(pm.getSubJob());
+                outPacket.encodeInt(pm.getLevel());
                 outPacket.encodeByte(pm.equals(party.getPartyLeader()));
             }
         }

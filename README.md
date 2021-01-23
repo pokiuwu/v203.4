@@ -14,7 +14,7 @@ A Java Maplestory server emulator. This is a fork of the v203.4 repo [MapleEllin
 
 - v203.4 Client Download: https://mega.nz/folder/ZnpliaBI#FHc4hqppv6Ustc3zTtSADQ
 
------ OR -----
+                                     ----- OR -----
 
 - Download via [Depot Downloader](https://github.com/SteamRE/DepotDownloader).
   - App 216150 

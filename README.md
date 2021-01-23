@@ -11,7 +11,10 @@ A Java Maplestory server emulator. This is a fork of the v203.4 repo [MapleEllin
 - You should be good to go! :octocat:
 
 ## Client Installation
-- Download [Depot Downloader](https://github.com/SteamRE/DepotDownloader).
+- Download via [Depot Downloader](https://github.com/SteamRE/DepotDownloader).
+  - App 216150 
+  - Depot 216151 
+  - Manifest 116526942226572538 
 - Rest of Steps to be added by Poki.
 
 ## Noteable Changes

@@ -22,6 +22,9 @@ A Java Maplestory server emulator. This is a fork of the v203.4 repo [MapleEllin
   - Manifest 116526942226572538 
 - Rest of Steps to be added by Poki.
 
+
+- Setup guide https://docs.google.com/document/d/1BT0IEIUhEIrS9XWISzKcXiSY89PnACYBHnoNI7gIom8/edit?usp=sharing
+
 ## Noteable Changes
 - A decent amount of packets fixed (err 38)
 - Threading issues

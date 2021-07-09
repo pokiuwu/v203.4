@@ -1353,15 +1353,9 @@ public class ScriptManagerImpl implements ScriptManager {
 
 	@Override
 	public void openShop(int shopID) {
-		NpcShopDlg nsd = NpcData.getShopById(shopID);
-		if (nsd != null) {
-			chr.setShop(nsd);
-			chr.write(ShopDlg.openShop(getParentID(), 0, nsd));
-		} else {
-			chat(String.format("Could not find shop with id %d.", shopID));
-			log.error(String.format("Could not find shop with id %d.", shopID));
-		}
+
 	}
+
 
 	@Override
 	public void openTrunk(int npcTemplateID) {

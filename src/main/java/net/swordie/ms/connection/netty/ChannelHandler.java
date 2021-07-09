@@ -295,7 +295,7 @@ public class ChannelHandler extends SimpleChannelInboundHandler<InPacket> {
                 WorldHandler.handleUserJaguarChangeRequest(chr, inPacket);
                 break;
             case USER_SHOP_REQUEST:
-                WorldHandler.handleUserShopRequest(c, inPacket);
+                WorldHandler.handleUserShopRequest(chr, inPacket);
                 break;
             case USER_CHANGE_SLOT_POSITION_REQUEST:
                 WorldHandler.handleUserChangeSlotPositionRequest(c, inPacket);

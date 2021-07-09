@@ -3,6 +3,7 @@ package net.swordie.ms.world.shop;
 import net.swordie.ms.client.character.items.Item;
 import net.swordie.ms.connection.OutPacket;
 import net.swordie.ms.connection.db.FileTimeConverter;
+import net.swordie.ms.constants.ItemConstants;
 import net.swordie.ms.enums.ItemGrade;
 import net.swordie.ms.util.FileTime;
 
@@ -49,6 +50,10 @@ public class NpcShopItem {
     private long unitPrice;
     private short maxPerSlot;
     private int discountPerc;
+    @Transient
+    public boolean isQuest;
+    @Transient
+    public boolean isBuyBack;
 
     public NpcShopItem() {
         sellStart = FileTime.fromType(FileTime.Type.ZERO_TIME);
@@ -57,23 +62,42 @@ public class NpcShopItem {
     }
 
     public void encode(OutPacket outPacket) {
-        outPacket.encodeInt(1);
-        // NpcShopItem::Decode
+        outPacket.encodeInt(getBuyLimit() == 0 ? -1 : getBuyLimit()); // -1 = infinite, 0 = nothing left.
+
         outPacket.encodeInt(getItemID());
         outPacket.encodeInt(getTabIndex());
         outPacket.encodeInt(getBuyLimit());
-        outPacket.encodeInt(0);
+        outPacket.encodeInt(getItemPeriod()); // time usage of item, in minutes (0 = no time limit)
+        outPacket.encodeInt(0); // idk, 0 doesn't crash, 300 does, 100100 doesn't
+//        outPacket.encodeInt(getDiscountPerc());
         outPacket.encodeInt(getPrice());
-        outPacket.encodeInt(getDiscountPerc());
         outPacket.encodeInt(getTokenItemID());
         outPacket.encodeInt(getTokenPrice());
         outPacket.encodeInt(getPointQuestID());
         outPacket.encodeInt(getPointPrice());
         outPacket.encodeInt(getStarCoin());
-        outPacket.encodeByte(0);
+        boolean bool = false;
+        outPacket.encodeByte(bool);
+        if (bool) {
+            outPacket.encodeInt(0);
+            outPacket.encodeByte(0);
+            outPacket.encodeByte(0);
+            outPacket.encodeString("");
+            outPacket.encodeInt(0);
+            outPacket.encodeString("");
+            outPacket.encodeLong(0);
+            outPacket.encodeLong(0);
+            outPacket.encodeString("");
+            int size = 0;
+            outPacket.encodeInt(size);
+            for (int i = 0; i < size; i++) {
+                outPacket.encodeLong(0);
+            }
+
+        }
+        outPacket.encodeInt(getQuestExValue());
         outPacket.encodeInt(getItemPeriod());
         outPacket.encodeInt(getLevelLimited());
-        outPacket.encodeInt(0);
         outPacket.encodeShort(getShowLevMin());
         outPacket.encodeShort(getShowLevMax());
         if (getBuyLimitInfo() != null) {
@@ -81,49 +105,42 @@ public class NpcShopItem {
         } else {
             new BuyLimitInfo().encode(outPacket);
         }
-        //outPacket.encodeInt(getQuestID());
-        outPacket.encodeByte(0);
+        outPacket.encodeByte(false); // bIsDisabled
         outPacket.encodeFT(getSellStart());
         outPacket.encodeFT(getSellEnd());
-        outPacket.encodeInt(getTabIndex());
-        outPacket.encodeShort(1);
+        outPacket.encodeInt(0); // ? setting it to >0 will make the item not show up
+        outPacket.encodeShort(getTabIndex());
         outPacket.encodeByte(isWorldBlock());
-        outPacket.encodeInt(getQuestExID());
-        outPacket.encodeString(getQuestExKey());
-        outPacket.encodeInt(getQuestExValue());
         outPacket.encodeInt(getPotentialGrade());
-        int prefix = getItemID() / 10000;
-        if (prefix != 207 && prefix != 233) {
+        outPacket.encodeString("");
+        outPacket.encodeInt(getBuyLimit());
+        outPacket.encodeInt(0); // ?
+        if (!ItemConstants.isRechargable(getItemID())) {
             outPacket.encodeShort(getQuantity());
         } else {
             outPacket.encodeLong(getUnitPrice());
         }
         outPacket.encodeShort(getMaxPerSlot());
         outPacket.encodeFT(FileTime.fromType(FileTime.Type.MAX_TIME));
-        // end NpcShopItem::Decode
-
-        /*outPacket.encodeByte(getItem() != null);
-        if (getItem() != null) {
-            getItem().encode(outPacket);
-        }*/
-        // wtf is the following
-        outPacket.encodeByte(0);
-        boolean idkProperty = false;
-        if(idkProperty) {
-            boolean bool2 = false;
-            outPacket.encodeByte(bool2);
-            if(bool2) {
+        outPacket.encodeByte(getDiscountPerc());
+        if (isQuest()) {
+            byte type = 0;
+            outPacket.encodeByte(type);
+            if (type == 1) {
                 outPacket.encodeByte(0);
             }
         }
-        // sub_71F670
+        // sub with idk stuff in it
         outPacket.encodeInt(0);
         outPacket.encodeInt(0);
         outPacket.encodeInt(0);
         outPacket.encodeInt(0);
-        outPacket.encodeArr(new byte[32]); // decodeBuffer(32)
-        // end sub_71F670
-        outPacket.encodeByte(0);
+        outPacket.encodeArr(new byte[32]); // decodeBuffer(32), npc id (4) + int (4) x4? Example id = 78 96 8F 00 (9410168)
+        // end sub
+        outPacket.encodeByte(isBuyBack());
+        if (isBuyBack()) {
+            item.encode(outPacket);
+        }
     }
     public int getItemID() {
         return itemID;
@@ -176,6 +193,10 @@ public class NpcShopItem {
 
     public int getPointQuestID() {
         return pointQuestID;
+    }
+
+    public boolean isQuest() {
+        return isQuest;
     }
 
     public void setPointQuestID(int pointQuestID) {
@@ -400,5 +421,13 @@ public class NpcShopItem {
 
     public void setShopID(int shopID) {
         this.shopID = shopID;
+    }
+
+    public boolean isBuyBack() {
+        return isBuyBack;
+    }
+
+    public void setBuyBack(boolean buyBack) {
+        isBuyBack = buyBack;
     }
 }

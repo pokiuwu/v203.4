@@ -35,23 +35,28 @@ public class NpcShopDlg {
 		}
 	}
 
-	public void encode(OutPacket outPacket) {
+	public void encode(OutPacket outPacket, List<NpcShopItem> buyBack) {
 		outPacket.encodeInt(getSelectNpcItemID());
 		outPacket.encodeInt(getNpcTemplateID());
 		outPacket.encodeInt(getStarCoin());
 		outPacket.encodeInt(getShopVerNo());
-		outPacket.encodeInt(0);
+		outPacket.encodeInt(1);
 		// start gms only
 		boolean hasQuest = false;
 		outPacket.encodeByte(hasQuest);
 		if (hasQuest) {
-			// just a guess that this is for quests
-			outPacket.encodeInt(0); // questID?
-			outPacket.encodeString(""); // questKey?
+			byte size = 0;
+			outPacket.encodeByte(size);
+			for (int i = 0; i < size; i++) {
+				// just a guess that this is for quests
+				outPacket.encodeInt(0); // questID?
+				outPacket.encodeString(""); // questKey?
+			}
 		}
 		// end gms only
-		outPacket.encodeShort(getItems().size());
+		outPacket.encodeShort(getItems().size() + buyBack.size());
 		getItems().forEach(item -> item.encode(outPacket));
+		buyBack.forEach(item -> item.encode(outPacket));
 	}
 
 	public int getShopID() {

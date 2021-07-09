@@ -74,6 +74,7 @@ import net.swordie.ms.world.field.Portal;
 import net.swordie.ms.world.field.fieldeffect.FieldEffect;
 import net.swordie.ms.world.gach.GachaponManager;
 import net.swordie.ms.world.shop.NpcShopDlg;
+import net.swordie.ms.world.shop.NpcShopItem;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -421,6 +422,8 @@ public class Char {
     private Map<Integer, PsychicArea> psychicArea = new HashMap<>();
     @Transient
     private Android android;
+	@Transient
+	private List<NpcShopItem> buyBack = new ArrayList<>();
 
 	public Char() {
 		this(0, "", 0, 0, 0, (short) 0, (byte) -1, (byte) -1, 0, 0, new int[]{});
@@ -2452,6 +2455,43 @@ public class Char {
 		this.temporaryStatManager = temporaryStatManager;
 	}
 
+	public void addItemToBuyBack(Item item) {
+		NpcShopItem nsi = new NpcShopItem();
+		nsi.setItemID(item.getItemId());
+		nsi.setItem(item);
+		nsi.setBuyBack(true);
+		int cost;
+		if (ItemConstants.isEquip(item.getItemId())) {
+			cost = ((Equip) item).getPrice();
+		} else {
+			cost = ItemData.getItemInfoByID(item.getItemId()).getPrice() * item.getQuantity();
+		}
+		nsi.setPrice(cost);
+		nsi.setQuantity((short) item.getQuantity());
+		getBuyBack().add(nsi);
+	}
+
+	public void consumeItemBySlot(InvType invType, int slot, int quantity) {
+		Item item = getInventoryByType(invType).getItemBySlot(slot);
+		if (item != null) {
+			int consumed = quantity > item.getQuantity() ? 0 : item.getQuantity() - quantity;
+			item.setQuantity(consumed + 1); // +1 because 1 gets consumed by consumeItem(item)
+			consumeItem(item);
+		}
+	}
+
+	public NpcShopItem getBuyBackItemBySlot(int slot) {
+		NpcShopItem nsi = null;
+		if (slot >= 0 && slot < getBuyBack().size()) {
+			return getBuyBack().get(slot);
+		}
+		return nsi;
+	}
+
+	public void removeBuyBackItem(NpcShopItem nsi) {
+		getBuyBack().remove(nsi);
+	}
+
 	public GachaponManager getGachaponManager() {
 		return gachaponManager;
 	}
@@ -2714,6 +2754,10 @@ public class Char {
 		eii.setLastHit(true);
 		eii.setIncEXP(Util.maxInt(amount));
 		addExp(amount, eii);
+	}
+
+	public List<NpcShopItem> getBuyBack() {
+		return buyBack;
 	}
 
 	/**

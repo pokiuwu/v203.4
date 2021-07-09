@@ -23,7 +23,6 @@ import net.swordie.ms.client.character.skills.*;
 import net.swordie.ms.client.character.skills.info.AttackInfo;
 import net.swordie.ms.client.character.skills.info.ForceAtomInfo;
 import net.swordie.ms.client.character.skills.info.MobAttackInfo;
-import net.swordie.ms.client.character.skills.info.SkillInfo;
 import net.swordie.ms.client.character.skills.temp.TemporaryStatManager;
 import net.swordie.ms.client.friend.Friend;
 import net.swordie.ms.client.friend.FriendFlag;
@@ -36,7 +35,7 @@ import net.swordie.ms.client.guild.GuildSkill;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.lang.Thread;
+
 import net.swordie.ms.client.guild.bbs.BBSRecord;
 import net.swordie.ms.client.guild.bbs.BBSReply;
 import net.swordie.ms.client.guild.bbs.GuildBBSPacket;
@@ -94,7 +93,6 @@ import net.swordie.ms.life.pet.PetSkill;
 import net.swordie.ms.loaders.*;
 import net.swordie.ms.loaders.containerclasses.*;
 import net.swordie.ms.loaders.containerclasses.ReactorInfo;
-import net.swordie.ms.scripts.ScriptManager;
 import net.swordie.ms.scripts.ScriptManagerImpl;
 import net.swordie.ms.scripts.ScriptType;
 import net.swordie.ms.util.*;
@@ -111,7 +109,7 @@ import net.swordie.ms.world.shop.NpcShopDlg;
 import net.swordie.ms.world.shop.NpcShopItem;
 import net.swordie.ms.world.shop.ShopRequestType;
 import net.swordie.ms.world.shop.cashshop.CashShop;
-import net.swordie.ms.world.shop.result.MsgShopResult;
+import net.swordie.ms.world.shop.result.ShopResult;
 import net.swordie.ms.world.shop.result.ShopResultType;
 import org.apache.log4j.LogManager;
 import org.hibernate.Session;
@@ -124,7 +122,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.text.NumberFormat;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.*;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -2208,7 +2205,7 @@ public class WorldHandler {
             if (nsd != null) {
                 chr.getScriptManager().stop(ScriptType.Npc); // reset contents before opening shop?
                 chr.setShop(nsd);
-                chr.write(ShopDlg.openShop(templateID, 0, nsd));
+                chr.write(ShopDlg.openShop(chr, templateID, nsd));
                 chr.chatMessage(String.format("Opening shop %s", npc.getTemplateId()));
                 return;
             } else {
@@ -3390,8 +3387,7 @@ public class WorldHandler {
         WvsContext.dispose(c.getChr());
     }
 
-    public static void handleUserShopRequest(Client c, InPacket inPacket) {
-        Char chr = c.getChr();
+    public static void handleUserShopRequest(Char chr, InPacket inPacket) {
         byte type = inPacket.decodeByte();
         ShopRequestType shr = ShopRequestType.getByVal(type);
         if (shr == null) {
@@ -3408,13 +3404,23 @@ public class WorldHandler {
                 int itemID = inPacket.decodeInt();
                 short quantity = inPacket.decodeShort();
                 NpcShopItem nsi = nsd.getItemByIndex(itemIndex);
+                if (nsi == null) {
+                    itemIndex -= nsd.getItems().size();
+                    nsi = chr.getBuyBackItemBySlot(itemIndex);
+                }
                 if (nsi == null || nsi.getItemID() != itemID) {
                     chr.chatMessage("The server's item at that position was different than the client's.");
                     log.warn(String.format("Possible hack: expected shop itemID %d, got %d (chr %d)", nsi.getItemID(), itemID, chr.getId()));
                     return;
                 }
+                if (nsi.getQuantity() > 0 && nsi.getQuantity() < quantity) {
+                    chr.write(ShopDlg.shopResult(ShopResult.msg(ShopResultType.FullInvMsg)));
+                    System.out.println("Shop Qty: " + nsi.getQuantity() + " expected: " + quantity);
+                    chr.getOffenseManager().addOffense(Offense.Type.Editing, "Tried buying more quantity than available");
+                    return;
+                }
                 if (!chr.canHold(itemID)) {
-                    chr.write(ShopDlg.shopResult(new MsgShopResult(ShopResultType.FullInvMsg)));
+                    chr.write(ShopDlg.shopResult(ShopResult.msg(ShopResultType.FullInvMsg)));
                     return;
                 }
                 if (nsi.getTokenItemID() != 0) {
@@ -3422,22 +3428,28 @@ public class WorldHandler {
                     if (chr.hasItemCount(nsi.getTokenItemID(), cost)) {
                         chr.consumeItem(nsi.getTokenItemID(), cost);
                     } else {
-                        chr.write(ShopDlg.shopResult(new MsgShopResult(ShopResultType.NotEnoughMesosMsg)));
+                        chr.write(ShopDlg.shopResult(ShopResult.msg(ShopResultType.NotEnoughMesosMsg)));
                         return;
                     }
                 } else {
                     long cost = nsi.getPrice() * quantity;
                     if (chr.getMoney() < cost) {
-                        chr.write(ShopDlg.shopResult(new MsgShopResult(ShopResultType.NotEnoughMesosMsg)));
+                        chr.write(ShopDlg.shopResult(ShopResult.msg(ShopResultType.NotEnoughMesosMsg)));
                         return;
                     }
                     chr.deductMoney(cost);
                 }
-                int itemQuantity = nsi.getQuantity() > 0 ? nsi.getQuantity() : 1;
-                Item item = ItemData.getItemDeepCopy(itemID);
-                item.setQuantity(quantity * itemQuantity);
+                Item item;
+                if (nsi.isBuyBack()) {
+                    item = nsi.getItem();
+                    chr.removeBuyBackItem(nsi);
+                } else {
+                    int itemQuantity = nsi.getQuantity() > 0 ? nsi.getQuantity() : 1;
+                    item = ItemData.getItemDeepCopy(itemID);
+                    item.setQuantity(quantity * itemQuantity);
+                }
                 chr.addItemToInventory(item);
-                chr.write(ShopDlg.shopResult(new MsgShopResult(ShopResultType.Success)));
+                chr.write(ShopDlg.shopResult(ShopResult.update(chr, nsd)));
                 break;
             case RECHARGE:
                 short slot = inPacket.decodeShort();
@@ -3449,14 +3461,14 @@ public class WorldHandler {
                 ItemInfo ii = ItemData.getItemInfoByID(item.getItemId());
                 long cost = ii.getSlotMax() - item.getQuantity();
                 if (chr.getMoney() < cost) {
-                    chr.write(ShopDlg.shopResult(new MsgShopResult(ShopResultType.NotEnoughMesosMsg)));
+                    chr.write(ShopDlg.shopResult(ShopResult.msg(ShopResultType.NotEnoughMesosMsg)));
                     return;
                 }
                 chr.deductMoney(cost);
                 item.addQuantity(ii.getSlotMax());
                 chr.write(WvsContext.inventoryOperation(true, false,
-                        InventoryOperation.UPDATE_QUANTITY, slot, (short) 0, 0, item));
-                chr.write(ShopDlg.shopResult(new MsgShopResult(ShopResultType.Success)));
+                        UPDATE_QUANTITY, slot, (short) 0, 0, item));
+                chr.write(ShopDlg.shopResult(ShopResult.msg(ShopResultType.Success)));
                 break;
             case SELL:
                 slot = inPacket.decodeShort();
@@ -3464,8 +3476,15 @@ public class WorldHandler {
                 quantity = inPacket.decodeShort();
                 InvType it = ItemConstants.getInvTypeByItemID(itemID);
                 item = chr.getInventoryByType(it).getItemBySlot(slot);
-                if (item == null || item.getItemId() != itemID) {
+                if (item == null || item.getItemId() != itemID || item.getQuantity() < quantity) {
                     chr.chatMessage("Could not find that item.");
+                    return;
+                }
+                if (!chr.hasItemCount(itemID, quantity)) {
+                    chr.getOffenseManager().addOffense(Offense.Type.Editing,
+                            String.format("Possible hack: User tried to sell %d amount of item %d while owning less",
+                                    quantity, itemID));
+                    chr.dispose();
                     return;
                 }
                 if (ItemConstants.isEquip(itemID)) {
@@ -3473,9 +3492,12 @@ public class WorldHandler {
                 } else {
                     cost = ItemData.getItemInfoByID(itemID).getPrice() * quantity;
                 }
-                chr.consumeItem(itemID, quantity);
+                Item buyBackItem = item.deepCopy();
+                buyBackItem.setQuantity(quantity);
+                chr.consumeItemBySlot(it, slot, quantity);
                 chr.addMoney(cost);
-                chr.write(ShopDlg.shopResult(new MsgShopResult(ShopResultType.Success)));
+                chr.addItemToBuyBack(buyBackItem);
+                chr.write(ShopDlg.shopResult(ShopResult.update(chr, nsd)));
                 break;
             case CLOSE:
                 chr.setShop(null);

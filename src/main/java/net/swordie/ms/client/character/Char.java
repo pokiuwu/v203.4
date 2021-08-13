@@ -3049,6 +3049,17 @@ public class Char {
 		return getAvatarData().getCharacterStat().getName();
 	}
 
+
+	public void encodeChatInfo(OutPacket outPacket, String msg) {
+		// vm'd sub
+		outPacket.encodeString(getName());
+		outPacket.encodeString(msg);
+		outPacket.encodeInt(getAccId());
+		outPacket.encodeInt(getId());
+		outPacket.encodeByte(0); // ?
+		outPacket.encodeInt(getId());
+	}
+
 	/**
 	 * Checks whether or not this Char has a given quest in progress.
 	 *

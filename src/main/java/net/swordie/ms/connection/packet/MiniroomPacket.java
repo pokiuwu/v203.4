@@ -110,14 +110,14 @@ public class MiniroomPacket {
         return outPacket;
     }
 
-    public static OutPacket chat(int pos, String msg) {
+    public static OutPacket chat(Char chr, int pos, String msg) {
         OutPacket outPacket = new OutPacket(OutHeader.MINI_ROOM_BASE_DLG);
 
         outPacket.encodeByte(MiniRoomType.Chat.getVal());
-        outPacket.encodeByte(0); // ?
+        outPacket.encodeByte(25); // ?
         outPacket.encodeByte(pos);
         outPacket.encodeString(msg);
-
+        chr.encodeChatInfo(outPacket, msg);
         return outPacket;
     }
 }

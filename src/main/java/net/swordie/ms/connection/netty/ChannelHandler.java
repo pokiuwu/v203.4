@@ -406,7 +406,7 @@ public class ChannelHandler extends SimpleChannelInboundHandler<InPacket> {
                 WorldHandler.handleUserPortalScrollUseRequest(c, inPacket);
                 break;
             case USER_TRANSFER_FIELD_REQUEST:
-                WorldHandler.handleChangeFieldRequest(c, inPacket);
+                WorldHandler.handleUserTransferFieldRequest(c, inPacket);
                 break;
             case USER_PROTECT_BUFF_DIE_ITEM_REQUEST:
                 WorldHandler.handleUserProtectBuffDieItemRequest(chr, inPacket);
@@ -632,7 +632,7 @@ public class ChannelHandler extends SimpleChannelInboundHandler<InPacket> {
                 WorldHandler.handleAndroidMove(chr, inPacket);
                 break;
             case USER_CONTENTS_MAP_REQUEST:
-           //    WorldHandler.handleUserContentsMapRequest(chr, inPacket);
+               WorldHandler.handleUserContentsMapRequest(chr, inPacket);
                 break;
             case USER_RUN_SCRIPT:
                 WorldHandler.handleUserRunScript(chr, inPacket);

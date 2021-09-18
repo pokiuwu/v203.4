@@ -5106,4 +5106,3 @@ public class Char {
 		write(UserLocal.noticeMsg(message, true));
 		write(CField.transferChannelReqIgnored(0));
 	}
-}

@@ -493,26 +493,12 @@ public class WorldHandler {
                 switch (attackInfo.attackHeader) {
                     case SUMMONED_ATTACK:
                         chr.getField().broadcastPacket(Summoned.summonedAttack(chr.getId(), attackInfo, false), chr);
-                        if (chr.getCopy() != null) {
-                            Summon oldSummon = attackInfo.summon;
-                            int oldOID = oldSummon.getObjectId();
-                            oldSummon.setObjectId(13371337);
-                            Char oldChr = oldSummon.getChr();
-                            oldSummon.setChr(chr.getCopy());
-                            chr.write(Summoned.summonedAttack(chr.getCopy().getId(), attackInfo, false));
-                            oldSummon.setChr(oldChr);
-                            oldSummon.setObjectId(oldOID);
-                        }
                         break;
                     case FAMILIAR_ATTACK:
                         chr.getField().broadcastPacket(CFamiliar.familiarAttack(chr.getId(), attackInfo), chr);
                         break;
                     default:
                         chr.getField().broadcastPacket(UserRemote.attack(chr, attackInfo), chr);
-                        Char copy = chr.getCopy();
-                        if (copy != null) {
-                            chr.write(UserRemote.attack(copy, attackInfo));
-                        }
                 }
             }
             int multiKillMessage = 0;
@@ -573,7 +559,6 @@ public class WorldHandler {
 
         }
     }
-
 
     public static void handleUserTransferFieldRequest(Client c, InPacket inPacket) {
         Char chr = c.getChr();
@@ -1138,30 +1123,6 @@ public class WorldHandler {
     }
 
 
-    private static void parseAttackInfoPacket(InPacket inPacket, MobAttackInfo mai) {
-        // PACKETMAKER::MakeAttackInfoPacket
-        mai.type = inPacket.decodeByte();
-        mai.currentAnimationName = "";
-        mai.unkStr = "";
-        if (mai.type == 1) {
-            mai.currentAnimationName = inPacket.decodeString();
-            mai.unkStr = inPacket.decodeString();
-            mai.animationDeltaL = inPacket.decodeInt();
-            mai.hitPartRunTimesSize = inPacket.decodeInt();
-            mai.hitPartRunTimes = new String[mai.hitPartRunTimesSize];
-            for (int j = 0; j < mai.hitPartRunTimesSize; j++) {
-                mai.hitPartRunTimes[j] = inPacket.decodeString();
-            }
-        } else if (mai.type == 2) {
-            mai.currentAnimationName = inPacket.decodeString();
-            mai.unkStr = inPacket.decodeString();
-            mai.animationDeltaL = inPacket.decodeInt();
-        }
-        mai.packetMakerUnk1 = inPacket.decodeByte();
-        mai.packetMakerRect = inPacket.decodeShortRect(); // I guess?
-    }
-
-
     public static void handleSummonedAttack(Client c, InPacket inPacket) {
         Char chr = c.getChr();
         Field field = chr.getField();
@@ -1171,8 +1132,7 @@ public class WorldHandler {
         ai.summon = (Summon) field.getLifeByObjectID(summonedID);
         ai.updateTime = inPacket.decodeInt();
         ai.skillId = inPacket.decodeInt();
-        ai.summonSpecialSkillId = inPacket.decodeInt();
-        inPacket.decodeByte(); // new 200
+        inPacket.decodeInt(); // hardcoded 0
         byte leftAndAction = inPacket.decodeByte();
         ai.attackActionType = (byte) (leftAndAction & 0x7F);
         ai.left = (byte) (leftAndAction >>> 7) != 0;
@@ -1180,8 +1140,9 @@ public class WorldHandler {
         ai.hits = (byte) (mask & 0xF);
         ai.mobCount = (mask >>> 4) & 0xF;
         inPacket.decodeByte(); // hardcoded 0
+        ai.attackAction = inPacket.decodeShort();
+        ai.attackCount = inPacket.decodeShort();
         ai.pos = inPacket.decodePosition();
-        inPacket.decodeByte();
         inPacket.decodeInt(); // hardcoded -1
         short idk3 = inPacket.decodeShort();
         int idk4 = inPacket.decodeInt();
@@ -1191,29 +1152,44 @@ public class WorldHandler {
             MobAttackInfo mai = new MobAttackInfo();
             mai.mobId = inPacket.decodeInt();
             mai.templateID = inPacket.decodeInt();
-            mai.hitAction = inPacket.decodeByte();
-            mai.left = inPacket.decodeByte();
-            mai.idk3 = inPacket.decodeByte();
-            mai.forceActionAndLeft = inPacket.decodeByte();
-            mai.frameIdx = inPacket.decodeByte();
+            mai.byteIdk1 = inPacket.decodeByte();
+            mai.byteIdk2 = inPacket.decodeByte();
+            mai.byteIdk3 = inPacket.decodeByte();
+            mai.byteIdk4 = inPacket.decodeByte();
+            mai.byteIdk5 = inPacket.decodeByte();
             int idk5 = inPacket.decodeInt(); // another template id, same as the one above
-            mai.calcDamageStatIndexAndDoomed = inPacket.decodeByte(); // 1st bit for bDoomed, rest for calcDamageStatIndex
-            mai.hitX = inPacket.decodeShort();
-            mai.hitY = inPacket.decodeShort();
-            mai.oldPosX = inPacket.decodeShort(); // ?
-            mai.oldPosY = inPacket.decodeShort(); // ?
-            int idk7 = inPacket.decodeInt();
+            byte byteIdk6 = inPacket.decodeByte();
+            mai.rect = inPacket.decodeShortRect();
             short idk6 = inPacket.decodeShort();
-            int idk8 = inPacket.decodeInt();
-            int idk9 = inPacket.decodeInt();
             long[] damages = new long[ai.hits];
             for (int j = 0; j < ai.hits; j++) {
                 damages[j] = inPacket.decodeLong();
             }
             mai.damages = damages;
             mai.mobUpDownYRange = inPacket.decodeInt();
-            parseAttackInfoPacket(inPacket, mai);
-            inPacket.decodeInt(); // new 199
+//            inPacket.decodeInt(); // crc
+            // Begin PACKETMAKER::MakeAttackInfoPacket
+            byte type = inPacket.decodeByte();
+            String currentAnimationName = "";
+            int animationDeltaL = 0;
+            String[] hitPartRunTimes = new String[0];
+            if (type == 1) {
+                currentAnimationName = inPacket.decodeString();
+                animationDeltaL = inPacket.decodeInt();
+                int hitPartRunTimesSize = inPacket.decodeInt();
+                hitPartRunTimes = new String[hitPartRunTimesSize];
+                for (int j = 0; j < hitPartRunTimesSize; j++) {
+                    hitPartRunTimes[j] = inPacket.decodeString();
+                }
+            } else if (type == 2) {
+                currentAnimationName = inPacket.decodeString();
+                animationDeltaL = inPacket.decodeInt();
+            }
+            // End PACKETMAKER::MakeAttackInfoPacket
+            mai.type = type;
+            mai.currentAnimationName = currentAnimationName;
+            mai.animationDeltaL = animationDeltaL;
+            mai.hitPartRunTimes = hitPartRunTimes;
             ai.mobAttackInfo.add(mai);
         }
         handleAttack(c, ai);
@@ -6785,11 +6761,16 @@ public class WorldHandler {
     }
 
     public static void handleDragonMove(Char chr, InPacket inPacket) {
+        Field field = chr.getField();
+        if (field == null || chr == null) {
+            chr.dispose();
+            return;
+        }
         Dragon dragon = chr.getDragon();
-        if (dragon != null && dragon.getOwner() == chr) {
+        if (dragon != null) {
             MovementInfo movementInfo = new MovementInfo(inPacket);
             movementInfo.applyTo(dragon);
-            chr.getField().broadcastPacket(DragonPool.moveDragon(dragon, movementInfo), chr);
+            chr.getField().broadcastPacket(CField.moveDragon(dragon, movementInfo), chr);
         }
     }
 

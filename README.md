@@ -3,7 +3,6 @@
 A Java Maplestory server emulator. This is a fork of the v203.4 repo [MapleEllinel](https://forum.ragezone.com/f427/mapleellinel-v203-4-based-swordie-1160913/) by Mechaviv and has since been worked on by Poki.
 
 ## Installation
-- Join SwordieMS [Discord](https://discord.gg/qzjWZP7hc5).
 - Proceed to server-setup-guide.
 - Follow the steps accordingly to the steps given in the discord.
 - Download and build the given [AuthHook](https://github.com/pokiuwu/AuthHook-v203.4) in Microsoft Visual Studio.
@@ -38,4 +37,4 @@ A Java Maplestory server emulator. This is a fork of the v203.4 repo [MapleEllin
 - [WzDumper v1.9.2](https://github.com/Xterminatorz/WZ-Dumper/releases/tag/1.9.2)
 
 ## Credits
-- Notable Credits: SwordieMS Team, Mechaviv
+- Notable Credits: Mechaviv
